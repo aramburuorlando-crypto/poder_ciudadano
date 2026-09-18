@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Constitucional Pro</title>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+    <style>
+  .menu-toggle {
+        position: fixed; top: 20px; right: 20px; z-index: 10000;
+        background-color: #74acdf; color: white; border: none; padding: 12px;
+        border-radius: 50%; font-size: 20px; cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15); width: 50px; height: 50px;
+        display: flex; align-items: center; justify-content: center;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .menu-toggle:hover { background-color: #f1b82d; }
+    .sidebar-menu {
+        position: fixed; top: 0; right: -290px; width: 280px; height: 100vh;
+        background-color: #ffffff; z-index: 9999;
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -5px 0 25px rgba(0,0,0,0.15); overflow-y: auto;
+        padding-top: 80px; box-sizing: border-box;
+    }
+    .sidebar-menu.active { right: 0 !important; }
+    .menu-vertical { list-style: none; padding: 0; margin: 0; }
+    .menu-vertical > li > a {
+        display: block; padding: 16px 24px; color: #2c3e50;
+        text-decoration: none; font-weight: 500; border-bottom: 1px solid #f0f2f5;
+        transition: all 0.2s ease;
+    }
+    .menu-vertical > li:hover > a { background-color: #f4f9ff; color: #2575c0; }
+    .submenu { display: none; list-style: none; padding: 0; background-color: #f8fafc; }
+    .submenu.show { display: block !important; }
+    .submenu a {
+        display: block; padding: 14px 40px; color: #64748b; text-decoration: none;
+        font-size: 15px; border-bottom: 1px solid #edf2f7; transition: all 0.2s ease;
+    }
+    .submenu a:hover { color: #ffffff; background-color: #74acdf; padding-left: 45px; }               
+/* Efecto táctil instantáneo para celulares */
+.menu-vertical > li > a:active,
+.submenu a:active {
+    background-color: #f0f2f5; /* Color más oscuro al tocar */
+    color: #2575c0;
+    padding-left: 28px;        /* Pequeño efecto de movimiento */
+    transition: all 0.1s ease;
+}
+
+ .social-share-sidebar {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .share-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-radius: 0 4px 4px 0;
+    }
+    .share-btn:hover {
+      width: 55px;
+      padding-left: 10px;
+    }
+    .btn-facebook { background-color: #1877F2; }
+    .btn-x { background-color: #000000; }
+    .btn-linkedin { background-color: #0077B5; }
+    .btn-whatsapp { background-color: #25D366; }
+    .btn-agregar { background-color: #333333; cursor: pointer; }
+    .share-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: #ffffff;
+    }
+    .icono-mas {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 1;
+      font-family: Arial, sans-serif;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-agregar:hover .icono-mas {
+      transform: rotate(180deg);
+    }
+    .modal-share-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(26, 54, 93, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal-share-overlay.mostrar {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-share-box {
+      background-color: #f4f4f9;
+      width: 90%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 15px 35px rgba(26, 54, 93, 0.15);
+      position: relative;
+      transform: scale(0.8);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-share-overlay.mostrar .modal-share-box {
+      transform: scale(1);
+    }
+    .modal-cerrar {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #7f8c8d;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal-cerrar:hover {
+      color: #1a365d;
+    }
+    .modal-share-box h3 {
+      margin: 0 0 20px 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: #1a365d;
+      font-size: 20px;
+      text-align: center;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .modal-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #2c3e50;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background-color: #ffffff;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      border: 1px solid #e6f0fa;
+    }
+    .modal-btn:hover {
+      background-color: #e6f0fa;
+      color: #1a365d;
+      transform: translateY(-2px);
+    }
+    .modal-btn svg {
+      width: 28px;
+      height: 28px;
+    }
+    .icon-telegram { fill: #0088cc; }
+    .icon-pinterest { fill: #bd081c; }
+    .icon-messenger { fill: #006aff; }
+    .icon-email { fill: #7f8c8d; }
+    .copiar-link-container {
+      display: flex;
+      background: #ffffff;
+      border: 1px solid #e6f0fa;
+      border-radius: 8px;
+      padding: 8px 12px;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    .link-texto {
+      font-family: monospace;
+      font-size: 12px;
+      color: #7f8c8d;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+    }
+    .btn-accion-copiar {
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-accion-copiar:hover {
+      background-color: #1a365d;
+    }
+    .alerta-copiado {
+      position: absolute;
+      bottom: -45px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1a365d;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: max-content;
+    }
+    .alerta-copiado.visible {
+      opacity: 1;
+    }
+
+        :root { --bg-gradient: linear-gradient(to bottom, #7bb3eb 0%, #b2d4f5 35%, #ffffff 55%, #ffffff 100%); --card-bg: rgba(255, 255, 255, 0.96); --text-main: #2c3e50; --text-sub: #34495e; --btn-desplegar-bg: #f8f9fa; --btn-desplegar-border: #dcdde1; }
+        [data-theme="dark"] { --bg-gradient: linear-gradient(to bottom, #1a2a3a 0%, #111822 100%); --card-bg: #1e272e; --text-main: #f5f6fa; --text-sub: #dcdde1; --btn-desplegar-bg: #2f3640; --btn-desplegar-border: #485460; }
+        html, body { max-width: 100%; overflow-x: hidden; }
+        body { font-family: Arial, sans-serif; background: var(--bg-gradient); background-attachment: fixed; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; transition: background 0.3s ease; }
+        .theme-switch { align-self: flex-end; margin-bottom: 10px; max-width: 100%; width: 100%; display: flex; justify-content: flex-end; box-sizing: border-box; }
+        .btn-theme { padding: 6px 12px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; background: #2c3e50; color: white; font-size: 0.85rem; }
+        [data-theme="dark"] .btn-theme { background: #f1c40f; color: #2c3e50; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); width: 100%; max-width: 520px; box-sizing: border-box; transition: background 0.3s ease; }
+        h1 { color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid #3498db; padding-bottom: 8px; margin-top: 0; word-wrap: break-word; }
+        h2 { color: var(--text-main); font-size: 1rem; line-height: 1.4; margin-bottom: 12px; word-wrap: break-word; }
+        .nivel { margin: 10px 0; padding: 12px; border-left: 5px solid; border-radius: 4px; position: relative; color: #333; max-height: 180px; overflow-y: auto; box-sizing: border-box; word-wrap: break-word; }
+        .basico { background: #e8f8f5; border-color: #2ecc71; }
+        .intermedio { background: #fef9e7; border-color: #f1c40f; }
+        .avanzado { background: #fbeee6; border-color: #e67e22; }
+        .wrapper-panel { display: none; box-sizing: border-box; }
+        .buscador-container { margin-bottom: 15px; position: relative; display: flex; gap: 5px; width: 100%; box-sizing: border-box; }
+        #input-busqueda { flex-grow: 1; padding: 10px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 0.85rem; width: 60%; }
+        .btn-voz { background: #3498db; border: none; color: white; padding: 0 12px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        .btn-voz.escuchando { background: #e74c3c; animation: pulse 1s infinite; }
+        .lista-resultados { position: absolute; width: 100%; background: white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 150px; overflow-y: auto; z-index: 10; top: 100%; margin-top: 5px; box-sizing: border-box; }
+        .resultado-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f1f2f6; font-size: 0.85rem; color: #34495e; }
+        .resultado-item:hover { background-color: #e8f8f5; color: #2ecc71; }
+        .btn-desplegar { background-color: var(--btn-desplegar-bg); color: var(--text-sub); border: 1px solid var(--btn-desplegar-border); width: 100%; text-align: left; padding: 10px; margin-top: 8px; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; box-sizing: border-box; }
+        .btn-copiar { position: sticky; float: right; top: 0; background: #ffffff; border: 1px solid #bdc3c7; padding: 3px 6px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; color: #7f8c8d; z-index: 5; }
+        .seccion-test { margin-top: 20px; padding: 12px; border: 2px dashed #3498db; border-radius: 8px; background: rgba(52, 152, 219, 0.05); box-sizing: border-box; }
+        .opciones-test { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .opcion-btn { padding: 8px; border: 1px solid #bdc3c7; border-radius: 6px; background: white; cursor: pointer; text-align: left; font-size: 0.85rem; transition: all 0.2s; color: #333; }
+        .opcion-btn:hover { background: #f5f6fa; }
+        .btn-container { display: flex; justify-content: space-between; margin-top: 20px; width: 100%; box-sizing: border-box; }
+        .nav-btn { padding: 10px 16px; border: none; background-color: #2980b9; color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .nav-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        .info { text-align: center; color: #7f8c8d; font-size: 0.8rem; margin-top: 12px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @media (max-width: 340px) { body { padding: 4px; } .card { padding: 10px; border-radius: 6px; } h1 { font-size: 0.95rem; } h2 { font-size: 0.85rem; } .nav-btn { padding: 8px 12px; font-size: 0.75rem; } .btn-desplegar { font-size: 0.75rem; padding: 8px; } #input-busqueda { font-size: 0.75rem; } .nivel { padding: 10px; font-size: 0.75rem; } }
+
+ /* --- CONTENEDOR DE PUBLICIDAD ADAPTABLE AL PIE --- */
+                /* Contenedor principal de la aplicación (Forzamos su ancho) */
+        .app-container {
+            display: flex;
+            width: 100%;
+            max-width: 950px; /* Reducimos sutilmente el ancho máximo para que quede más compacto */
+            gap: 25px;
+        }
+
+        /* --- COLUMNA IZQUIERDA: EL CARD INTERACTIVO --- */
+        .content-area {
+            flex: 1;
+            min-width: 0; /* Evita desbordamientos extraños */
+        }
+
+        /* Forzamos a la CARD a ocupar todo el espacio disponible de su columna */
+        .card-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            height: 100%; /* Se estira para emparejarse visualmente */
+            box-sizing: border-box;
+        }
+
+        /* --- CONTENEDOR DE PUBLICIDAD AL PIE (Alineación perfecta) --- */
+                /* CAJA MAESTRA CENTRAL: Forzará la alineación perfecta de bordes */
+        .wrapper-central {
+            width: 100%;
+            max-width: 960px; /* Ancho total exacto de tu aplicación en pantalla */
+            margin: 0 auto;   /* Centra todo el sitio en la pantalla */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;        /* Separación vertical de 20px entre el juego y la publicidad */
+        }
+
+        /* Contenedor de la app (Ahora mide el 100% de la caja maestra) */
+        .app-container {
+            display: flex;
+            width: 100%;
+            gap: 25px; /* Separación horizontal entre CARD y Menú */
+        }
+
+        .content-area {
+            flex: 1; /* Obliga a la CARD a estirarse y usar todo su espacio de columna */
+        }
+
+        /* Contenedor de Publicidad (Mide el 100% de la caja maestra, alineación matemática) */
+        .publicidad-container {
+            width: 100%; 
+            background-color: #ffffff; 
+            border-radius: 16px; 
+            padding: 12px; 
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.04);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+
+.footer-logo {
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.footer-credits {
+    font-size: 0.85rem;
+    color: #334155;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+/* Contenedor principal del Pie de Página */
+footer, .footer-cuestionario {
+    max-width: 520px; /* Exactamente el mismo ancho máximo de tu Card */
+    width: 100%;
+    margin: 20px auto 0 auto; /* Lo separa de la tarjeta y lo centra horizontalmente */
+    background: var(--card-bg); /* Mismo color de fondo adaptativo (Modo Claro/Oscuro) */
+    padding: 15px;
+    border-radius: 12px; /* Mismos bordes redondeados de tu Card */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra suave compatible */
+    text-align: center; /* Centra los textos internamente */
+    box-sizing: border-box;
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    line-height: 1.5;
+}
+
+/* Ajuste responsive para celulares de 320px */
+@media (max-width: 380px) {
+    footer, .footer-cuestionario {
+        max-width: 100%;
+        border-radius: 8px; /* Bordes levemente más compactos en celulares */
+        padding: 10px;
+        font-size: 0.75rem;
+        margin-top: 15px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+
+<!-- COMPONENTES DEL MENÚ -->        
+    <!-- Menú lateral derecho -->
+   <button class="menu-toggle" id="menuBtn" aria-label="Abrir menú">☰</button>
+
+<nav class="sidebar-menu" id="sidebar">
+    <ul class="menu-vertical">
+        <li><a href="../index.html">Inicio</a></li>
+        <li><a href="../mensaje.html">Mensaje</a></li>
+        <li><a href="./index.html">Cuestionario</a></li>
+        <li><a href="../contacto.html">Contacto</a></li>
+    </ul>
+</nav>
+
+ <aside class="social-share-sidebar">
+    <a href="#" class="share-btn btn-facebook js-share-link" data-plataforma="facebook" title="Compartir en Facebook">
+      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+    <a href="#" class="share-btn btn-x js-share-link" data-plataforma="x" title="Compartir en X">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a href="#" class="share-btn btn-linkedin js-share-link" data-plataforma="linkedin" title="Compartir en LinkedIn">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="#" class="share-btn btn-whatsapp js-share-link" data-plataforma="whatsapp" title="Compartir por WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-3.559c1.62.962 3.377 1.47 5.388 1.471 5.584 0 10.129-4.544 10.132-10.13.002-2.705-1.05-5.248-2.962-7.161-1.911-1.913-4.453-2.965-7.163-2.966-5.588 0-10.133 4.545-10.136 10.13-.001 2.02.528 3.997 1.53 5.731l-.993 3.626 3.712-.973zm11.233-7.513c-.305-.153-1.806-.891-2.086-.993-.28-.102-.485-.153-.687.153-.203.306-.787.993-.965 1.197-.178.204-.356.229-.661.077-.305-.153-1.29-.475-2.457-1.516-.908-.81-1.52-1.81-1.698-2.116-.178-.306-.019-.471.134-.622.137-.137.305-.356.458-.535.153-.178.204-.306.305-.51.102-.204.051-.382-.025-.535-.076-.153-.687-1.657-.941-2.269-.247-.594-.5-.513-.687-.523-.178-.01-.382-.01-.586-.01-.204 0-.535.077-.814.382-.28.306-1.069 1.046-1.069 2.551 0 1.505 1.094 2.958 1.247 3.162.153.204 2.153 3.286 5.216 4.607.728.314 1.297.502 1.741.643.731.233 1.396.2 1.923.122.587-.087 1.806-.739 2.061-1.454.254-.714.254-1.326.178-1.454-.076-.127-.28-.204-.586-.357z"/></svg>
+    </a>
+    <div id="btn-abrir-modal" class="share-btn btn-agregar" title="Más opciones para compartir">
+      <span class="icono-mas">+</span>
+    </div>
+  </aside>
+  <div id="modal-compartir" class="modal-share-overlay">
+    <div class="modal-share-box">
+      <button id="btn-cerrar-modal" class="modal-cerrar">&times;</button>
+      <h3>Compartir sitio en...</h3>
+      <div class="modal-grid">
+        <a href="#" class="modal-btn js-share-link" data-plataforma="telegram">
+          <svg class="icon-telegram" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.87 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.46c.538-.196 1.006.128.832.941z"/></svg>
+          Telegram
+        </a>
+        <a href="#" class="modal-btn js-share-link" data-plataforma="pinterest">
+          <svg class="icon-pinterest" viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.966 1.406-5.966s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.204 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.27 1.023-1.002 2.305-1.493 3.102 1.125.347 2.317.535 3.553.535 6.622 0 11.985-5.367 11.985-11.987C24.002 5.367 18.64 0 12.017 0z"/></svg>
+          Pinterest
+        </a>
+        <a href="#" class="modal-btn js-share-link" data-plataforma="messenger">
+          <svg class="icon-messenger" viewBox="0 0 24 24"><path d="M12 0C5.463 0 0 5.06 0 11.3c0 3.558 1.735 6.73 4.453 8.813V24l3.687-2.02c1.22.338 2.51.52 3.86.52 6.537 0 12-5.06 12-11.3S18.537 0 12 0zm1.286 14.85l-2.92-3.12-5.7 3.12 6.26-6.65 2.97 3.13 5.65-3.13-6.26 6.65z"/></svg>
+          Messenger
+        </a>
+        <a href="#" class="modal-btn js-share-link" data-plataforma="email">
+          <svg class="icon-email" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/></svg>
+          Correo
+        </a>
+      </div>
+      <div class="copiar-link-container">
+        <span id="txt-url-sitio" class="link-texto">Cargando enlace...</span>
+        <button id="btn-copiar-enlace" class="btn-accion-copiar">Copiar</button>
+        <div id="alerta-exito" class="alerta-copiado">¡Enlace copiado!</div>
+      </div>
+    </div>
+  </div>
+
+    <div class="theme-switch"><button class="btn-theme" id="toggle-tema" onclick="cambiarTema()">🌙 Modo Oscuro</button></div>
+    <div class="card">
+        <div class="buscador-container">
+            <input type="text" id="input-busqueda" placeholder="🔍 Buscar palabra clave...">
+            <button id="btn-microfono" class="btn-voz">🎙️</button>
+            <div id="resultados-busqueda" class="lista-resultados"></div>
+        </div>
+        <h1 id="titulo-cuestionario">Cargando fundamentos...</h1>
+        <div id="bloque-cuestionario">
+            <div id="pantalla-pregunta">
+                <h2 id="texto-pregunta"></h2>
+                <div class="nivel basico"><button class="btn-copiar" onclick="copiarTexto('nivel-basico')">📋 Copiar</button><strong>🌱 Nivel Básico:</strong><p id="nivel-basico" style="margin:5px 0 0 0;"></p></div>
+                <button type="button" class="btn-desplegar" onclick="toggleNivel('wrap-intermedio')"><span>👀 Ver Explicación Intermedia</span> <span id="flecha-intermedio">▼</span></button>
+                <div id="wrap-intermedio" class="wrapper-panel"><div class="nivel intermedio"><button class="btn-copiar" onclick="copiarTexto('nivel-intermedio')">📋 Copiar</button><strong>⚡ Nivel Intermedio:</strong><p id="nivel-intermedio" style="margin:5px 0 0 0;"></p></div></div>
+                <button type="button" class="btn-desplegar" onclick="toggleNivel('wrap-avanzado')"><span>🔥 Ver Explicación Avanzada</span> <span id="flecha-avanzado">▼</span></button>
+                <div id="wrap-avanzado" class="wrapper-panel"><div class="nivel avanzado"><button class="btn-copiar" onclick="copiarTexto('nivel-avanzado')">📋 Copiar</button><strong>🚀 Nivel Avanzado:</strong><p id="nivel-avanzado" style="margin:5px 0 0 0;"></p></div></div>
+                <div id="zona-evaluacion" class="seccion-test" style="display:none;"><strong style="color:#2980b9;">📝 Mini-Test:</strong><p id="enunciado-test" style="font-weight:bold;margin:6px 0;font-size:0.85rem;"></p><div id="opciones-contenedor" class="opciones-test"></div><p id="feedback-test" style="margin-top:8px;font-weight:bold;display:none;font-size:0.85rem;"></p></div>
+            </div>
+            <div class="btn-container"><button id="btn-anterior" class="nav-btn" disabled>Anterior</button><button id="btn-siguiente" class="nav-btn">Siguiente</button></div>
+            <div id="progreso" class="info"></div>
+        </div>
+        <div id="pantalla-final" style="display:none;text-align:center;padding:15px;"><div style="font-size:3rem;">🎉</div><h2>¡Estudio Completado!</h2><p style="font-size:0.9rem;color:#555;">Felicidades, terminaste todas las autoevaluaciones.</p><button id="btn-reiniciar" class="nav-btn" style="background-color:#2ecc71;margin-top:10px;">Reiniciar</button></div>
+    </div>
+    <!-- Vinculamos de nuevo tu script externo -->
+    <script src="script.js"></script>
+
+
+<!-- PIE DE PÁGINA (AQUÍ DEBE QUEDAR UBICADO) -->
+    <footer class="site-footer">
+        <img src="../imagenes/logo-p-ciudadano.png" alt="Logo Poder Ciudadano" class="footer-logo">
+        <div class="footer-credits">
+            © 2026 <strong>Poder Ciudadano</strong>. Desarrollado por el Autor.<br>
+            Cuestionario interactivo sobre temática Constitucional de bases indexadas.
+        </div>
+       <div class="publicidad-container" style="margin-top: 15px;">
+                <a href="https://primer-enlace.com" target="_blank" id="publicidadEnlace" style="display: block; text-decoration: none;">
+                    <img src="tu-banner-1.png" alt="Publicidad Rotativa" id="publicidadImagen" class="tu-imagen-banner" style="transition: opacity 0.3s ease; width: 100%; height: auto;">
+                </a>
+            </div>
+    </footer>
+
+<script>
+    const modalCompartir = document.getElementById('modal-compartir');
+    const btnAbrirModal = document.getElementById('btn-abrir-modal');
+    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+    const btnCopiarEnlace = document.getElementById('btn-copiar-enlace');
+    const txtUrlSitio = document.getElementById('txt-url-sitio');
+    const alertaExito = document.getElementById('alerta-exito');
+
+    const urlActual = encodeURIComponent(window.location.href);
+    const textoCompartir = encodeURIComponent("¡Echa un vistazo a este sitio web!");
+
+    txtUrlSitio.textContent = window.location.href;
+
+    document.querySelectorAll('.js-share-link').forEach(boton => {
+      const plataforma = boton.getAttribute('data-plataforma');
+      let urlDestino = '#';
+      switch (plataforma) {
+        case 'facebook':
+          urlDestino = `https://facebook.com{urlActual}`;
+          break;
+        case 'x':
+          urlDestino = `https://x.com{urlActual}&text=${textoCompartir}`;
+          break;
+        case 'linkedin':
+          urlDestino = `https://linkedin.com{urlActual}`;
+          break;
+        case 'whatsapp':
+          urlDestino = `https://whatsapp.com{textoCompartir}%20${urlActual}`;
+          break;
+        case 'telegram':
+          urlDestino = `https://t.me{urlActual}&text=${textoCompartir}`;
+          break;
+        case 'pinterest':
+          urlDestino = `https://pinterest.com{urlActual}&description=${textoCompartir}`;
+          break;
+        case 'messenger':
+          urlDestino = `fb-messenger://share/?link=${urlActual}`;
+          break;
+        case 'email':
+          urlDestino = `mailto:?subject=${textoCompartir}&body=${window.location.href}`;
+          break;
+      }
+      boton.setAttribute('href', urlDestino);
+      if(plataforma !== 'email' && plataforma !== 'messenger') {
+        boton.setAttribute('target', '_blank');
+        boton.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+
+    btnAbrirModal.addEventListener('click', () => {
+      modalCompartir.classList.add('mostrar');
+    });
+
+    function ocultarModal() {
+      modalCompartir.classList.remove('mostrar');
+    }
+
+    btnCerrarModal.addEventListener('click', ocultarModal);
+    
+    modalCompartir.addEventListener('click', (e) => {
+      if (e.target === modalCompartir) ocultarModal();
+    });
+
+    btnCopiarEnlace.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alertaExito.classList.add('visible');
+        btnCopiarEnlace.textContent = "¡Copiado!";
+        setTimeout(() => {
+          alertaExito.classList.remove('visible');
+          btnCopiarEnlace.textContent = "Copiar";
+        }, 2500);
+      }).catch(err => {
+        console.error('Error al copiar: ', err);
+      });
+    });
+
+<!-- LOGICA JAVASCRIPT -->
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const btnCategorias = document.getElementById('btnCategorias');
+        const subMenuCategorias = document.getElementById('subMenuCategorias');
+
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('active');
+                menuBtn.textContent = sidebar.classList.contains('active') ? '✕' : '☰';
+            });
+        }
+
+        if (btnCategorias && subMenuCategorias) {
+            btnCategorias.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                subMenuCategorias.classList.toggle('show');
+            });
+        }
+    });
+// Cerrar el menú al hacer clic en cualquier parte fuera de él
+document.addEventListener('click', (e) => {
+    // Si el menú está abierto y el clic NO fue dentro del menú (sidebar)
+    if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+        sidebar.classList.remove('active');
+        menuBtn.textContent = '☰'; // Restablece el ícono a las tres líneas
+    }
+});
+
+ // --- MOTOR DE PUBLICIDAD ROTATIVA AUTOMÁTICA BLINDADO ---
+        // Si dejas esta lista vacía o con errores, la página NO se congelará más
+        const listaBanners = [
+            { 
+                imagen: "../imagenes/afilia-temu.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/autor-1.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/banner-1.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/banner-2.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/b-bytelixir.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/b-honeygain.png", 
+                enlace: "../contacto.html" 
+            },
+{ 
+                imagen: "../imagenes/encuesta-1.png", 
+                enlace: "../contacto.html" 
+            },
+            { 
+                imagen: "../imagenes/encuesta-2.png", 
+                enlace: "../contacto.html" 
+            }
+        ];
+        
+        let bannerActivoIndice = 0;
+
+        function rotarPublicidadAutomatica() {
+            const elEnlace = document.getElementById('publicidadEnlace');
+            const laImagen = document.getElementById('publicidadImagen');
+            
+            // Esta validación evita que la página se tilde si las imágenes o enlaces no existen
+            if (elEnlace && laImagen && listaBanners && listaBanners.length > 0) {
+                laImagen.style.opacity = 0;
+                setTimeout(() => {
+                    bannerActivoIndice = (bannerActivoIndice + 1) % listaBanners.length;
+                    
+                    // Verificamos que el elemento de la lista exista antes de asignarlo
+                    if (listaBanners[bannerActivoIndice]) {
+                        laImagen.src = listaBanners[bannerActivoIndice].imagen || "";
+                        elEnlace.href = listaBanners[bannerActivoIndice].enlace || "#";
+                    }
+                    laImagen.style.opacity = 1;
+                }, 300);
+            }
+        }
+        
+        // Ejecuta la rotación cada 5 segundos de forma segura
+        if (listaBanners && listaBanners.length > 0) {
+            setInterval(rotarPublicidadAutomatica, 5000);
+        }
+
+
+       // Inicialización automática al cargar el documento
+        window.onload = () => {
+            cambiarUnidadEspecifica(1);
+        };
+
+  </script>
+
+</body>
+</html>

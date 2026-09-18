@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="stylesheet" href="https://cloudflare.com">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensaje del Autor</title>
+  <style>
+    /* --- CONFIGURACIÓN BASE GLOBAL (Unificada) --- */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(to bottom, #74acdf 0%, #74acdf 40%, #ffffff 55%, #ffffff 100%);
+      background-attachment: fixed;
+      color: #333;
+    }
+
+    /* --- CONTENEDOR PRINCIPAL RESPONSIVE --- */
+    .mensaje-container {
+      display: flex;
+      flex-direction: row; /* Escritorio: uno al lado del otro */
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .mensaje-left {
+      flex: 1;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .mensaje-left img {
+      width: 100%;       /* Ocupa el ancho disponible */
+      max-width: 250px;  /* Pero no crece más de 250px */
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .mensaje-right {
+      flex: 2;
+      background-color: #cce7f7; /* fondo celeste */
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+
+    .mensaje-right h1 {
+      color: #003366;
+      margin-top: 0;
+    }
+
+    .mensaje-right p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .mensaje-right .autor {
+      margin-top: 30px;
+      font-weight: bold;
+      text-align: right;
+    }
+  
+    .boton-accion {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #007bff; 
+      color: #ffffff; 
+      text-decoration: none; 
+      font-weight: bold;
+      border-radius: 5px; 
+      text-align: center;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .boton-accion:hover {
+      background-color: #0056b3; 
+      transform: translateY(-2px); 
+    }
+
+    .boton-accion:active {
+      transform: translateY(0);
+    }
+
+    /* --- MENÚ LATERAL --- */
+    .menu-toggle {
+      position: fixed; top: 20px; right: 20px; z-index: 10000;
+      background-color: #74acdf; color: white; border: none; padding: 12px;
+      border-radius: 50%; font-size: 20px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15); width: 50px; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .menu-toggle:hover { background-color: #f1b82d; }
+    
+    .sidebar-menu {
+      position: fixed; top: 0; right: -290px; width: 280px; height: 100vh;
+      background-color: #ffffff; z-index: 9999;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -5px 0 25px rgba(0,0,0,0.15); overflow-y: auto;
+      padding-top: 80px; box-sizing: border-box;
+    }
+    .sidebar-menu.active { right: 0 !important; }
+    .menu-vertical { list-style: none; padding: 0; margin: 0; }
+    .menu-vertical > li > a {
+      display: block; padding: 16px 24px; color: #2c3e50;
+      text-decoration: none; font-weight: 500; border-bottom: 1px solid #f0f2f5;
+      transition: all 0.2s ease;
+    }
+    .menu-vertical > li:hover > a { background-color: #f4f9ff; color: #2575c0; }
+    .submenu { display: none; list-style: none; padding: 0; background-color: #f8fafc; }
+    .submenu.show { display: block !important; }
+    .submenu a {
+      display: block; padding: 14px 40px; color: #64748b; text-decoration: none;
+      font-size: 15px; border-bottom: 1px solid #edf2f7; transition: all 0.2s ease;
+    }
+    .submenu a:hover { color: #ffffff; background-color: #74acdf; padding-left: 45px; }
+
+    /* =======================================================
+       CORRECCIÓN PARA CELULARES (Media Query)
+       ======================================================= */
+    @media (max-width: 768px) {
+      .mensaje-container {
+        flex-direction: column; /* Apila la imagen arriba y el texto abajo */
+        align-items: center;    /* Centra los elementos */
+        padding: 20px;          /* Reduce espacios en pantallas chicas */
+      }
+
+      .mensaje-left {
+        padding: 0 0 20px 0;    /* Quita espacio lateral innecesario */
+      }
+
+      .mensaje-right {
+        width: 100%;            /* Toma todo el ancho disponible del celular */
+        padding: 20px;          /* Compacta el cuadro celeste */
+      }
+
+      .boton-accion {
+        display: block;         /* Hace que el botón ocupe todo el ancho si es necesario */
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+/* Efecto táctil instantáneo para celulares */
+.menu-vertical > li > a:active,
+.submenu a:active {
+    background-color: #f0f2f5; /* Color más oscuro al tocar */
+    color: #2575c0;
+    padding-left: 28px;        /* Pequeño efecto de movimiento */
+    transition: all 0.1s ease;
+}
+
+ .telegram-inline-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #24A1DE;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .telegram-inline-btn:hover {
+    background-color: #1d82b3;
+    transform: translateY(-2px);
+  }
+
+  .telegram-inline-btn i {
+    font-size: 1.3rem;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="mensaje-container">
+    <!-- Columna izquierda: logo + ilustración -->
+    <div class="mensaje-left">
+      <img src="imagenes/logo-p-ciudadano.png" alt="Logo Poder Ciudadano">
+      <img src="imagenes/lateral-mensaje.png" alt="Ilustración colaboración">
+   <a href="https://t.me/oma560" target="_blank" class="telegram-inline-btn">
+  <i class="fa-brands fa-telegram"></i> Escribinos por Telegram
+</a>
+</div>
+
+    <!-- Columna derecha: texto del mensaje -->
+    <div class="mensaje-right">
+      <h1>Aporte Ciudadano</h1>
+      <p>El autor de este proyecto te invita a participar no solo promoviendo o recomendando esta aplicación si no también aportando ideas, inquietudes y todo lo que tenga ver con el interés público y el impacto favorable en lo cultural y económico de nuestros ciudadanos.</p>
+      <p>El Autor: </p>
+      <p>Orlando Miguel Aramburú.        </p>
+      
+    </div>
+  </div>
+ <!-- Contenido de relleno para probar el scroll de la página -->
+    <header>
+        <h1></h1>
+    </header>
+    <main style="padding-bottom: 80px;"> </main>
+
+    <!-- COMPONENTES DEL MENÚ -->        
+    <!-- Menú lateral derecho -->
+   <button class="menu-toggle" id="menuBtn" aria-label="Abrir menú">☰</button>
+
+<nav class="sidebar-menu" id="sidebar">
+    <ul class="menu-vertical">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="mensaje.html">Mensaje</a></li>
+        <li><a href="card/index.html">Cuestionario</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+</nav>
+
+    <!-- LOGICA JAVASCRIPT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const btnCategorias = document.getElementById('btnCategorias');
+        const subMenuCategorias = document.getElementById('subMenuCategorias');
+
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('active');
+                menuBtn.textContent = sidebar.classList.contains('active') ? '✕' : '☰';
+            });
+        }
+
+        if (btnCategorias && subMenuCategorias) {
+            btnCategorias.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                subMenuCategorias.classList.toggle('show');
+            });
+        }
+    });
+
+// Cerrar el menú al hacer clic en cualquier parte fuera de él
+document.addEventListener('click', (e) => {
+    // Si el menú está abierto y el clic NO fue dentro del menú (sidebar)
+    if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+        sidebar.classList.remove('active');
+        menuBtn.textContent = '☰'; // Restablece el ícono a las tres líneas
+    }
+});
+
+    </script>
+
+</body>
+</html>
